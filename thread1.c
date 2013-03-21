@@ -18,7 +18,6 @@ int linepos = 0;
 void * controller(void * arg)
 {
     char ch;
-    int i = 0;
     int j;
 
     char command[7];
@@ -30,20 +29,21 @@ void * controller(void * arg)
         }
         ch = bufferReader();
         if (ch!=EOF)
-            process(ch);                
+            displayText(ch);                
         else
             break;
-        linepos++;
     }
 	return 0;
 }
 
-void process (char ch) {
+void displayText (char ch) {
     if (isprint(ch))
         if (ch == '[')
             execComm();
-        else
+        else{
             printf("%c", ch);
+            linepos++;
+        }
 
     else
         printf("\nError: non-displayable character\n");
@@ -61,22 +61,23 @@ void execComm (){
     if (bufferReader() == ']'){
         if (!strcmp(comm, "NEWLN")){
             printf("\n");
+            linepos=0;
         }
         else if (!strcmp(comm, "DELAY")){
             sleep(1);
         }
         else if (!strcmp(comm, "DBNLN")){
             printf("\n\n");
+            linepos = 0;
+        }
+        else if (!strcmp(comm, "INDNT")){
+            printf("\n     ");
+            linepos = 5;
         }
         else{
             printf("\nError: unrecognized command\n");
         }
     }
-}
-
-
-void displayText (char line []){
-    printf("%s\n", line);
 }
 
 

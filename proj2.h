@@ -12,7 +12,7 @@ char bufferReader ();
 void execComm ();
 
 //displays on the screen text (including error messages) that is given as the parameter. Since the VDU can display up to thirty characters per line, the length of array line should not exceed the maximum. 
-void displayText (char line []);
+void displayText (char ch);
 
 //thread2.c
 
