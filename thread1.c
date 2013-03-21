@@ -13,6 +13,8 @@ extern char buffer[];
 
 void process(char);
 
+int linepos = 0;
+
 void * controller(void * arg)
 {
     char ch;
@@ -22,54 +24,17 @@ void * controller(void * arg)
     char command[7];
 
     while(1) {
-        if (i == 30){
+        if (linepos == 30){
             printf("\n");
-            i = 0;
+            linepos = 0;
         }
         ch = bufferReader();
         if (ch!=EOF)
             process(ch);                
         else
             break;
-        i++;
+        linepos++;
     }
-/*
-   while(1) {
-        ch = bufferReader();
-        if (ch != EOF) {
-            if (isprint(ch)){
-                if (ch == '[') {
-                    command[0] = '[';
-                    for (j = 1; j < 7; j++){
-                        ch = bufferReader();
-                        if(ch == ']'){
-                            if (j==6) {
-                                command[j] = ']';
-                                execComm(command);
-                            }
-                            else
-                                printf("\nError: Command incorrect length\n");
-                        }
-                        else
-                            command[j] = ch;
-                    }
-                }
-                else
-                    printf("%c", ch);
-            }
-            else 
-                printf("\nError: non-displayable character\n");
-        }
-        else {
-            break;
-        }
-        if (i == 30){
-            printf("\n");
-            i = -1;
-        }
-        i++;
-    }
-*/
 	return 0;
 }
 
@@ -99,6 +64,9 @@ void execComm (){
         }
         else if (!strcmp(comm, "DELAY")){
             sleep(1);
+        }
+        else if (!strcmp(comm, "DBNLN")){
+            printf("\n\n");
         }
         else{
             printf("\nError: unrecognized command\n");
