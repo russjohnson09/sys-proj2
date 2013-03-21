@@ -29,27 +29,6 @@ void * devDriver(void * arg)
             bufferWriter(buff);
     }
 
-
-/*    while(n < 1) {
-
-        for(i=0;i<7;i++){
-            scanf("%c", &ch);
-            printf("%c",ch);
-//            ch = getchar();
-            buff[i] = ch;
-            //ch = 
-        }
-        bufferWriter(buff);
-        n++;
-    }
-    */
-
-	// read seven characters from the input file into an array
-	// and use bufferWritter() with that array as the parameter
-	// to store those characters in the buffer shared between 
-	// threads; do this repeatedly until EOF is reached.  
-	// note that EOF needs to be stored in the buffer as well. 
-
 	return 0;
 }
 

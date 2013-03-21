@@ -1,5 +1,9 @@
 #include "proj2.h"
 
+#include <time.h>
+#include<stdio.h>
+#include<stdlib.h>
+
 extern pthread_mutex_t mutex;
 extern pthread_cond_t reading_done;
 extern pthread_cond_t writing_done;
@@ -7,75 +11,102 @@ extern pthread_cond_t writing_done;
 extern int  current;			 
 extern char buffer[];
 
+void process(char);
+
 void * controller(void * arg)
 {
-	// igore the parameter arg which is not useful in this project
-
-    char chars[30];
-    char command[7];
-    int i;
+    char ch;
+    int i = 0;
     int j;
-    char ch;
-    while(1){
-        for(i=0;i<30;i++){
-            ch=bufferReader();
-            if(!isprint(ch)){
-                printf("\nError: non-displayable character\n");
-                continue;
-            }
-            if (ch == '['){
-                //displayText(chars);
 
-                j = 0;
-                while(1){
-                    ch = bufferReader();
-                    if (j > 6){
-                        break;
-                    } 
-                    if (ch == ']'){
-                        execComm(command);
-                        break;
-                    }
-                    command[j] = ch;
-                    j++;
-                }
-            }
-            if (ch!=EOF)
-                chars[i] = ch;
-            else{
-                chars[i] = ch;
-                displayText(chars);
-                return 0;
-            }
+    char command[7];
+
+    while(1) {
+        if (i == 30){
+            printf("\n");
+            i = 0;
         }
-        displayText(chars);
-    }
-
-/*
-    int i;
-    char ch;
-    for(i=0; i<30; i++) {
         ch = bufferReader();
-        printf("%c", ch);
+        if (ch!=EOF)
+            process(ch);                
+        else
+            break;
+        i++;
+    }
+/*
+   while(1) {
+        ch = bufferReader();
+        if (ch != EOF) {
+            if (isprint(ch)){
+                if (ch == '[') {
+                    command[0] = '[';
+                    for (j = 1; j < 7; j++){
+                        ch = bufferReader();
+                        if(ch == ']'){
+                            if (j==6) {
+                                command[j] = ']';
+                                execComm(command);
+                            }
+                            else
+                                printf("\nError: Command incorrect length\n");
+                        }
+                        else
+                            command[j] = ch;
+                    }
+                }
+                else
+                    printf("%c", ch);
+            }
+            else 
+                printf("\nError: non-displayable character\n");
+        }
+        else {
+            break;
+        }
+        if (i == 30){
+            printf("\n");
+            i = -1;
+        }
+        i++;
     }
 */
-
-	// use bufferReader() to receive one character from the buffer
-	// shared between threads and process it; do this repeatedly
-	// until EOF is encountered. also define functions displayText() 
-	// and execComm() to perform the required actions.
-
 	return 0;
 }
 
-void execComm (char comm []){
-    if (!strcmp(comm,"[NEWLNN]"))
-        printf("\n");
+void process (char ch) {
+    if (isprint(ch))
+        if (ch == '[')
+            execComm();
+        else
+            printf("%c", ch);
+
     else
-        printf("\n{Error: unrecognizable command}\n");
+        printf("\nError: non-displayable character\n");
+
 }
 
-//displays on the screen text (including error messages) that is given as the parameter. Since the VDU can display up to thirty characters per line, the length of array line should not exceed the maximum. 
+void execComm (){
+    char comm[5];
+    int i;
+    char ch;
+    for (i = 0; i < 5; i++) {
+        ch = bufferReader();
+        comm[i] = ch;
+    }
+    if (bufferReader() == ']'){
+        if (!strcmp(comm, "NEWLN")){
+            printf("\n");
+        }
+        else if (!strcmp(comm, "DELAY")){
+            sleep(1);
+        }
+        else{
+            printf("\nError: unrecognized command\n");
+        }
+    }
+}
+
+
 void displayText (char line []){
     printf("%s\n", line);
 }
